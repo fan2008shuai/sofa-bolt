@@ -110,6 +110,9 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
         Assert.assertNotNull(bizCtx.getConnection());
         Assert.assertTrue(bizCtx.getConnection().isFine());
 
+        RequestBody req = new RequestBody(2, "hello my client");
+        bizCtx.getConnection().getChannel().write(req);
+
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
         Assert.assertNotNull(waittime);
         if (logger.isInfoEnabled()) {
