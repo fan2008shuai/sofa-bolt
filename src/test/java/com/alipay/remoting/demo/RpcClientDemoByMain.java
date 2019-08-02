@@ -52,8 +52,6 @@ public class RpcClientDemoByMain {
         // 2. add processor for connect and close event if you need
         client.addConnectionEventProcessor(ConnectionEventType.CONNECT, clientConnectProcessor);
         client.addConnectionEventProcessor(ConnectionEventType.CLOSE, clientDisConnectProcessor);
-
-        // sofa-bolt未实现。当RpcCommandHandler拿到返回值之后直接赋值
         client.registerUserProcessor(clientUserProcessor);
         // 3. do init
 //        client.init();

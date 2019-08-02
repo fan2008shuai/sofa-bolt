@@ -39,13 +39,15 @@ public class RpcServerDemoByMain {
 
     int                       port                      = 8999;
 
-    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();
+//    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();
+    SimpleServerUserProcessor serverUserProcessor;
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor  serverDisConnectProcessor = new DISCONNECTEventProcessor();
 
     public RpcServerDemoByMain() {
         // 1. create a Rpc server with port assigned
         server = new BoltServer(port);
+        serverUserProcessor = new SimpleServerUserProcessor(server.getRpcServer());
         // 2. add processor for connect and close event if you need
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);

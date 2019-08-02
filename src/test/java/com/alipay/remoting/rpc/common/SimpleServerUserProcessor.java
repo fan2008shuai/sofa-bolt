@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.alipay.remoting.rpc.RpcServer;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +67,18 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
     private String              remoteAddr;
     private CountDownLatch      latch          = new CountDownLatch(1);
 
+    private RpcServer server;
+
     public SimpleServerUserProcessor() {
         this.delaySwitch = false;
         this.delayMs = 0;
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
+    }
+
+    public SimpleServerUserProcessor(RpcServer server) {
+        this();
+        this.server = server;
     }
 
     public SimpleServerUserProcessor(long delay) {
@@ -111,7 +119,10 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
         Assert.assertTrue(bizCtx.getConnection().isFine());
 
         RequestBody req = new RequestBody(2, "hello my client");
-        bizCtx.getConnection().getChannel().write(req);
+        if (server != null) {
+            String res = (String) server.invokeSync(bizCtx.getConnection(), req, bizCtx.getClientTimeout());
+            System.out.println("server receive push result from client: " + res);
+        }
 
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
         Assert.assertNotNull(waittime);
